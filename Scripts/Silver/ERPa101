@@ -1,0 +1,13 @@
+INSERT INTO silver.erp_LOC_A101 (CID, CNTRY)
+select 
+
+replace(cid, '-', '') as CID,
+
+CASE 
+WHEN TRIM(CNTRY) = 'DE' THEN 'Germany'
+WHEN TRIM(CNTRY) IN ('US', 'USA') THEN 'United States'
+when trim(cntry) = '' or cntry is null then 'n/a'
+ELSE TRIM(CNTRY)
+end as CNTRY
+
+from bronze.erp_loc_a101
