@@ -1,0 +1,32 @@
+INSERT INTO silver.crm_cust_info ( 
+		cst_id,
+		cst_key,
+		st_firstname,
+		cst_LastName,
+		cst_marital_status,
+		cst_gndr,
+		cst_create_date)
+SELECT
+cst_id,
+cst_key,
+trim(st_firstname) as cst_FirstName,
+trim(cst_lastname) as cst_LastName,
+CASE
+	when UPPER(TRIM(cst_marital_status)) = 'M' THEN 'Married'
+	when UPPER(TRIM(cst_marital_status)) = 'S' THEN 'Single'
+	else 'n/a'
+end cst_marial_status,
+
+CASE
+	when UPPER(TRIM(cst_gndr)) = 'F' THEN 'Female'
+	when UPPER(TRIM(cst_gndr)) = 'M' THEN 'Male'
+	else 'n/a'
+END cst_gndr,
+cst_create_date
+from (
+	SELECT
+	*,
+	ROW_NUMBER() OVER (PARTITION BY cst_id order by cst_create_date DESC) AS Flag_Last
+	from bronze.crm_cust_info
+	where cst_id is not null
+	)t where flag_last = 1
